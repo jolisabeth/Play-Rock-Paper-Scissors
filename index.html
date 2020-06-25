@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+    
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Rock Paper Scissors Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    
+    <h1>Rock, Paper, Scissors, Shoot!</h1>
+    <h2>Sorry, your intuition won't help you here.</h2>
+    
+    <div class='game'>
+        <button class='rock'>Rock</button>
+        <button class='paper'>Paper</button>
+        <button class='scissors'>Scissors</button>
+    </div>
+    <div class ='results'>          
+        <h2>Win best 5 out of ...?</h2>
+        <p class='score'></p>
+        <div class = 'messages'></div>
+        
+    </div>
+    
+    <script>
+        let gamesWon = 0;
+        let gamesLost = 0;
+        const buttons = document.querySelectorAll('button');
+        const results = document.querySelector('.results');
+        const score = document.querySelector('.score');
+        const messages = document.querySelector('.messages');
+        const newGame = document.createElement('button');
+        buttons.forEach(button => button.addEventListener('click', playRound));
+
+        function playRound(e) {
+            let computerSelection = computerPlay();
+            let playerSelection = this.classList.value;
+            let result;
+
+            switch (playerSelection){
+                case 'rock': 
+                    if (computerSelection == 'rock'){
+                        result = 'tie';
+                    } else if (computerSelection == 'paper'){
+                        result = 'lose';
+                        gamesLost++;
+                    } else if (computerSelection == 'scissors'){
+                        result = 'win';
+                        gamesWon++;                    
+                    } break;
+                case 'paper':
+                    if (computerSelection == 'rock'){
+                        result = 'win';
+                        gamesWon++;
+                    } else if (computerSelection == 'paper'){
+                        result = 'tie';
+                    } else if (computerSelection == 'scissors'){
+                        result = 'lose';
+                        gamesLost++;
+                    } break;
+                case 'scissors':
+                    if (computerSelection == 'rock'){
+                        result = 'lose';
+                        gamesLost++;
+                    } else if (computerSelection == 'paper'){
+                        result = 'win';
+                        gamesWon++;
+                    } else if (computerSelection == 'scissors'){
+                        result = 'tie';
+                    } break; 
+            }
+
+            displayResult(playerSelection, computerSelection, result);
+            displayScore(gamesWon, gamesLost);
+        }
+
+        function displayScore(gamesWon, gamesLost) {
+            if (gamesWon < 5 && gamesLost < 5) {
+                score.textContent = `You are up ${gamesWon} and down ${gamesLost}.`
+            } else if (gamesWon == 5) {
+                score.textContent = `You are up ${gamesWon} and down ${gamesLost}.`
+                buttons.forEach(button => button.disabled = true);
+                msg = makeMessageNode();
+                msg.textContent = `You won the game! Congratulations lucky duck.`;
+                makeNewGameButton();
+            } else if (gamesLost == 5) {
+                buttons.forEach(button => button.disabled = true);
+                score.textContent = `You are up ${gamesWon} and down ${gamesLost}.`
+                msg = makeMessageNode();
+                msg.textContent = `You lost...sorry.  Make your next move to start a new game.`
+                makeNewGameButton();
+            }
+        }
+
+        function displayResult(playerSelection, computerSelection, result) {
+            let content;
+            msg = makeMessageNode();
+            switch (result){
+                case 'tie': content = `${playerSelection} vs. ${computerSelection} -- you tied.`;
+                break;
+                case 'win': content = `${playerSelection} vs. ${computerSelection} -- you won! :)`;
+                break;
+                case 'lose': content = `${playerSelection} vs. ${computerSelection} -- you lost :(`;
+                break;
+            }
+            msg.textContent = content;
+        }
+
+        function makeMessageNode(){
+            const msg = document.createElement('p')
+            messages.appendChild(msg);
+            msg.classList.add('message')
+            return msg;
+        }
+        
+        function computerPlay() {
+            var options = ['rock', 'paper', 'scissors'];
+            return options[Math.floor(Math.random()*3)];
+        }
+
+        function makeNewGameButton(){
+            results.appendChild(newGame);
+            newGame.addEventListener('click', gameReset);
+            newGame.textContent = "New Game";
+        }
+
+        function gameReset(){
+            var nodeList = document.querySelectorAll('.message');
+            nodeList.forEach(node => messages.removeChild(node));
+            gamesWon = 0;
+            gamesLost = 0;
+            displayScore(gamesWon, gamesLost);
+            newGame.addEventListener('click', results.removeChild(newGame));
+            buttons.forEach(button => button.disabled = false);
+        }
+        
+        </script>
+</body>
+
+</html>
